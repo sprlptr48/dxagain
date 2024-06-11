@@ -125,13 +125,13 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(LIBRARIES_FOLDER)\lpng1643;$(LIBRARIES_FOLDER)\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBRARIES_FOLDER)\lpng1643;$(LIBRARIES_FOLDER)\GLFW\include;$(VcpkgRoot)installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"$(LIBRARIES_FOLDER)\GLFW\lib-vc2022\glfw3dll.lib";"$(SolutionDir)\vcpkg_installed\x64-windows-static\debug\lib\libpng16d.lib";"$(SolutionDir)\vcpkg_installed\x64-windows-static\debug\lib\zlibd.lib";%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\vcpkg_installed\x64-windows-static\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>"glfw3dll.lib";"$(SolutionDir)\vcpkg_installed\x64-windows-static\debug\lib\libpng16d.lib";"$(SolutionDir)\vcpkg_installed\x64-windows-static\debug\lib\zlibd.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VcpkgRoot)installed\x64-windows\lib;$(SolutionDir)\vcpkg_installed\x64-windows-static\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,15 +144,15 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(LIBRARIES_FOLDER)\lpng1643;$(LIBRARIES_FOLDER)\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBRARIES_FOLDER)\lpng1643;$(LIBRARIES_FOLDER)\GLFW\include;$(VcpkgRoot)installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"$(LIBRARIES_FOLDER)\GLFW\lib-vc2022\glfw3dll.lib";"$(SolutionDir)\vcpkg_installed\x64-windows-static\lib\libpng16.lib";"$(SolutionDir)\vcpkg_installed\x64-windows-static\lib\zlib.lib";%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LIBRARIES_FOLDER)\GLFW\lib-vc2022;$(SolutionDir)\vcpkg_installed\x64-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>"glfw3dll.lib";"$(SolutionDir)\vcpkg_installed\x64-windows-static\lib\libpng16.lib";"$(SolutionDir)\vcpkg_installed\x64-windows-static\lib\zlib.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VcpkgRoot)installed\x64-windows\lib;$(LIBRARIES_FOLDER)\GLFW\lib-vc2022;$(SolutionDir)\vcpkg_installed\x64-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

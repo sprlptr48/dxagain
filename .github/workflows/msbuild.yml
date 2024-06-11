@@ -1,4 +1,4 @@
-name: MSBuild with Caching and Artifacts
+name: MSBuild without Caching
 
 on:
   push:
@@ -8,8 +8,7 @@ on:
 
 env:
   SOLUTION_FILE_PATH: .
-  BUILD_CONFI"GURATION: Release
-  VCPKG_DIR: ${{ runner.tool_cache }}/vcpkg"
+  BUILD_CONFIGURATION: Release
   ASSETS_PATH: 'Assets' # Relative path from the root of your repository
 
 permissions:
@@ -22,21 +21,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Cache vcpkg installed packages
-    - name: Cache vcpkg packages
-      uses: actions/cache@v3
-      with:
-        path: ${{env.VCPKG_DIR}}
-        key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
-        restore-keys: |
-          ${{ runner.os }}-vcpkg-
-
     - name: Set up vcpkg
       run: |
-        if not exist "${{env.VCPKG_DIR}}" (
-          git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_DIR}}
-          .\vcpkg\bootstrap-vcpkg.bat
-        )
+        git clone https://github.com/Microsoft/vcpkg.git
+        .\vcpkg\bootstrap-vcpkg.bat
 
     - name: Install dependencies with vcpkg
       run: |

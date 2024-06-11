@@ -38,9 +38,6 @@ jobs:
     - name: Install dependencies with vcpkg
       run: .\vcpkg\vcpkg install
 
-    - name: Install GLFW as dynamic library
-      run: .\vcpkg\vcpkg install glfw3:x64-windows
-
     - name: Set up vcpkg environment variables
       run: .\vcpkg\vcpkg integrate install
 #notme

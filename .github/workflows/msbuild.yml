@@ -9,7 +9,7 @@ on:
 env:
   SOLUTION_FILE_PATH: .
   BUILD_CONFIGURATION: Release
-  VCPKG_DIR: '${{ runner.tool_cache }}/vcpkg'
+  VCPKG_DIR: '${{ runner.temp }}/vcpkg'
   ASSETS_PATH: 'sprlptr48/dxagain/Assets'
 
 permissions:

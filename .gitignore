@@ -369,4 +369,3 @@ vcpkg_installed/
 packages/
 vcpkg-configuration.json
 glfw3.dll
-Assets/vcpkgLibs

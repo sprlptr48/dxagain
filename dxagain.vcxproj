@@ -78,7 +78,7 @@
       <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\x64-windows\lib;$(LIBRARIES_FOLDER)\GLFW\lib-vc2022;$(SolutionDir)vcpkg_installed\x64-windows-static\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)vcpkg_installed\x64-windows\bin\glfw3.dll" "$(OutDir)glfw3.dll"</Command>
+      <Command>xcopy /y /i "$(SolutionDir)vcpkg_installed\x64-windows\bin\glfw3.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -102,7 +102,7 @@
       <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\x64-windows\lib;$(LIBRARIES_FOLDER)\GLFW\lib-vc2022;$(SolutionDir)\vcpkg_installed\x64-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)vcpkg_installed\x64-windows\bin\glfw3.dll" "$(OutDir)glfw3.dll"</Command>
+      <Command>xcopy /y /i "$(SolutionDir)vcpkg_installed\x64-windows\bin\glfw3.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

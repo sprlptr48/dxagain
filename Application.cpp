@@ -25,8 +25,8 @@ bool Application::Initialize()
 
     GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
-    _width = static_cast<int32_t>(videoMode->width * 0.9f);
-    _height = static_cast<int32_t>(videoMode->height * 0.9f);
+    _width = static_cast<int32_t>(videoMode->width * 0.5f);
+    _height = static_cast<int32_t>(videoMode->height * 0.75f);
 
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

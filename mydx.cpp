@@ -309,7 +309,7 @@ void mydx::Update()
 }
 
 void mydx::Render() {
-	constexpr float clearColor[] = { .258823f, .019607f, .227451f };
+	constexpr float clearColor[] = { .0858823f, .0019607f, .0227451f };
 	constexpr UINT vertexOffset = 0;
 
 	constexpr ID3D11RenderTargetView* nullTarget = nullptr;

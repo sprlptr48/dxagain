@@ -36,7 +36,7 @@ jobs:
         .\vcpkg\bootstrap-vcpkg.bat
 
     - name: Install dependencies with vcpkg
-      run: .\vcpkg\vcpkg install [package-name]
+      run: .\vcpkg\vcpkg install
 
     - name: Set up vcpkg environment variables
       run: .\vcpkg\vcpkg integrate install

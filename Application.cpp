@@ -128,12 +128,14 @@ void Application::Update()
     _deltaTime = static_cast<float>(timeSpan.count());
     _totalTime += _deltaTime;
     const float avgTime = _totalTime / _totalFrames;
+    const int fps = static_cast<int>(1000.0 / avgTime);
     // will insert into the array later, init with string first
-    char timeStr[50] = "last ms: ....... | last 100 frame avg ms: .......";
+    char timeStr[59] = "last ms: ....... | last 100 frame avg ms: .......fps: ....";
     constexpr std::chars_format fmt = std::chars_format::fixed;
     constexpr int precision = 2;
     std::to_chars(timeStr + 9, timeStr + 22, _deltaTime, fmt, precision); // even if there is an error,
-    std::to_chars(timeStr + 42, timeStr + 48,   avgTime, fmt, precision); // we can still change dont care
+    std::to_chars(timeStr + 42, timeStr + 48, avgTime  , fmt, precision); // we can still change dont care
+    std::to_chars(timeStr + 55, timeStr + 58, fps);
 
     glfwSetWindowTitle(_window, timeStr);
     glfwPollEvents();

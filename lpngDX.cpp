@@ -13,7 +13,7 @@
 ID3D11SamplerState* m_textureSampler;
 ID3D11Texture2D* m_texture2d;*/
 
-bool loadPngImage(const char* name, int& outWidth, int& outHeight, unsigned char** outData) {
+bool loadPngImage(const wchar_t* name, int& outWidth, int& outHeight, unsigned char** outData) {
 	png_structp png_ptr;
 	png_infop info_ptr;
 	unsigned int sig_read = 0;
@@ -21,12 +21,15 @@ bool loadPngImage(const char* name, int& outWidth, int& outHeight, unsigned char
 	FILE* fp;
 
 	//openning file
-	if (fopen_s(&fp, name, "rb") != 0)
+	if (_wfopen_s(&fp, name, L"rb") != NULL)
 	{
 		// If fopen_s returns a non-zero value, the file could not be opened
 		return false;
 	}
-
+	if (fp == 0) 
+	{
+		return false;
+	}
 	//initializing png_struct. 
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
 		NULL, NULL, NULL);

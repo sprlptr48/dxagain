@@ -1,5 +1,6 @@
 #include "mydx.hpp"
 #include "ShaderCollection.hpp"
+#include "lpngDX.hpp"
 
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -16,9 +17,6 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "dxguid.lib")
-
-// LibPNG read image method
-#include "lpngDX.hpp"
 
 
 
@@ -131,6 +129,8 @@ bool mydx::Initialize() {
 
 	CreateSwapchainResources();
 
+	CreateConstantBuffers();
+
 	// i guess it is not needed, leave it in case thoughTODO: init libpng?(needed?)
 
 	return true;
@@ -162,9 +162,7 @@ WRL::ComPtr<ID3D11ShaderResourceView> CreateTextureView(ID3D11Device* device, co
 	uint8_t** image = new(uint8_t*);
 	int width = 0, height = 0; // Written to in the loadPngImage function
 	constexpr int bitPerPixel = 32;
-	std::wstring wstr = pathToTexture;
-	std::string path(wstr.begin(), wstr.end());
-	bool loadSuccess = loadPngImage(path.c_str(), width, height, image);
+	bool loadSuccess = loadPngImage(pathToTexture.c_str(), width, height, image);
 	if (loadSuccess != true) {
 		std::cerr << "loadPngImage Failed, error\n";
 		return nullptr;
@@ -213,10 +211,9 @@ WRL::ComPtr<ID3D11ShaderResourceView> CreateTextureView(ID3D11Device* device, co
 
 	if (FAILED(device->CreateShaderResourceView(texture.Get(), &srvDesc, &srv)))
 	{
-		std::cerr << "CreateTextureView: Failed to create SRV from texture:" << path << " \n";
+		std::wcerr << "CreateTextureView: Failed to create SRV from texture: '" << pathToTexture << "'\n";
 		return nullptr;
 	}
-
 	return srv;
 }
 
@@ -229,9 +226,9 @@ bool mydx::Load() {
 	_shaderCollection = ShaderCollection::CreateShaderCollection(shaderCollDesc, _device.Get());
 
 	constexpr VertexPositionColorUv vertices[] = {
-	{  Position{ 0.0f, 0.5f, 0.0f }, Color{ 0.20f, 0.29f, 0.09f }, Uv{ 0.5f, 0.0f }},
-	{ Position{ 0.5f, -0.5f, 0.0f }, Color{ 0.33f, 0.55f, 0.19f }, Uv{ 1.0f, 1.0f }},
-	{Position{ -0.5f, -0.5f, 0.0f }, Color{ 0.28f, 0.45f, 0.13f }, Uv{ 0.0f, 1.0f }},
+	{  Position{ 0.01f, 0.5f, 0.01f }, Color{ 0.20f, 0.29f, 0.09f }, Uv{ 0.5f, 0.0f }},
+	{ Position{ 0.5f, -0.5f, 0.01f }, Color{ 0.33f, 0.55f, 0.19f }, Uv{ 1.0f, 1.0f }},
+	{Position{ -0.5f, -0.5f, 0.01f }, Color{ 0.28f, 0.45f, 0.13f }, Uv{ 0.0f, 1.0f }},
 	};
 
 	D3D11_BUFFER_DESC bufferInfo = {};
@@ -251,13 +248,14 @@ bool mydx::Load() {
 		return false;
 	}
 
-	_textureSrv = CreateTextureView(_device.Get(), L"Assets/images/image.png");
+	const std::wstring imagePath = L"Assets/images/image.png";
+	_textureSrv = CreateTextureView(_device.Get(), imagePath);
 	if (_textureSrv == nullptr)
 	{
 		//this is "fine", we can use our fallback!
 		//_textureSrv = _fallbackTextureSrv;
 		//actually i dont have a fallback, panic
-		std::cerr << "Failed to create TextureView from file: 'Assets/images/image.png'\n";
+		std::wcerr << "Failed to create TextureView from file: '" << imagePath << "'\n";
 		return false;
 	}
 
@@ -275,6 +273,20 @@ bool mydx::Load() {
 	}
 
 	return true;
+}
+
+void mydx::CreateConstantBuffers()
+{
+	D3D11_BUFFER_DESC desc = {};
+	desc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
+	desc.ByteWidth = sizeof(PerFrameConstantBuffer);
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE;
+
+	_device->CreateBuffer(&desc, nullptr, &_perFrameConstantBuffer);
+
+	desc.ByteWidth = sizeof(PerObjectConstantBuffer);
+	_device->CreateBuffer(&desc, nullptr, &_perObjectConstantBuffer);
 }
 
 bool mydx::CreateSwapchainResources() {
@@ -306,6 +318,47 @@ void mydx::DestroySwapchainResources()
 void mydx::Update()
 {
 	Application::Update();
+
+	using namespace DirectX;
+
+	static float _xRotation = -0.140f;
+	static float _yRotation = 3.140f;
+	static float _scale = .5f;
+	static XMFLOAT3 _cameraPosition = { 0.0f, 0.0f, -1.0f };
+
+	_scale += _deltaTime / 10000.0;
+	_xRotation += _deltaTime / 10000.0;
+	_yRotation += _deltaTime / 1000.0;
+
+	/*		   CAMERA			*/
+	XMVECTOR camPos = XMLoadFloat3(&_cameraPosition);
+
+	XMMATRIX view = XMMatrixLookAtRH(camPos, g_XMZero, { 0, 1, 0, 1 });
+	XMMATRIX proj = XMMatrixPerspectiveFovRH(90.0f * 0.0174533f,
+		static_cast<float>(_width) / static_cast<float>(_height),
+		0.01f,
+		100.0f);
+
+	XMMATRIX viewProjection = XMMatrixMultiply(view, proj);
+	XMStoreFloat4x4(&_perFrameConstantBufferData.viewProjectionMatrix, viewProjection);
+
+	/*			OBJECT			*/
+	XMMATRIX translation = XMMatrixTranslation(0, 0, 0);
+	XMMATRIX scaling = XMMatrixScaling(_scale, _scale, _scale);
+	XMMATRIX rotation = XMMatrixRotationRollPitchYaw(_xRotation, _yRotation, 0.0f);
+
+	XMMATRIX modelMatrix = XMMatrixMultiply(translation, XMMatrixMultiply(scaling, rotation));
+	XMStoreFloat4x4(&_perObjectConstantBufferData.modelMatrix, modelMatrix);
+
+	// update Constant Buffer
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	_deviceContext->Map(_perFrameConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &_perFrameConstantBufferData, sizeof(PerFrameConstantBuffer));
+	_deviceContext->Unmap(_perFrameConstantBuffer.Get(), 0);
+
+	_deviceContext->Map(_perObjectConstantBuffer.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &_perObjectConstantBufferData, sizeof(PerObjectConstantBuffer));
+	_deviceContext->Unmap(_perObjectConstantBuffer.Get(), 0);
 }
 
 void mydx::Render() {
@@ -348,6 +401,14 @@ void mydx::Render() {
 
 	_deviceContext->PSSetShaderResources(0, 1, _textureSrv.GetAddressOf());
 	_deviceContext->PSSetSamplers(0, 1, _linearSamplerState.GetAddressOf());
+
+	ID3D11Buffer* constantBuffers[2] =
+	{
+		_perFrameConstantBuffer.Get(),
+		_perObjectConstantBuffer.Get()
+	};
+
+	_deviceContext->VSSetConstantBuffers(1, 2, constantBuffers);
 
 	//constexpr UINT presentFlags = 0x00000200UL;
 	_deviceContext->Draw(3, 0);

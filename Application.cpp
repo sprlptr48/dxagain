@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <ratio>
+#include <charconv>
 
 Application::Application(const std::string& title)
     : _title(title)
@@ -114,10 +115,26 @@ int32_t Application::GetWindowHeight() const
 
 void Application::Update()
 {
-    auto oldTime = _currentTime;
+    const auto oldTime = _currentTime;
+    _totalFrames += 1;
     _currentTime = std::chrono::high_resolution_clock::now();
+    if (_totalFrames > 100)
+    {
+        _totalFrames = 1;
+        _totalTime = 0;
+    }
 
     std::chrono::duration<double, std::milli> timeSpan = (_currentTime - oldTime);
-    _deltaTime = static_cast<float>(timeSpan.count() / 1000.0);
+    _deltaTime = static_cast<float>(timeSpan.count());
+    _totalTime += _deltaTime;
+    const float avgTime = _totalTime / _totalFrames;
+    // will insert into the array later, init with string first
+    char timeStr[50] = "last ms: ....... | last 100 frame avg ms: .......";
+    constexpr std::chars_format fmt = std::chars_format::fixed;
+    constexpr int precision = 2;
+    std::to_chars(timeStr + 9, timeStr + 22, _deltaTime, fmt, precision); // even if there is an error,
+    std::to_chars(timeStr + 42, timeStr + 48,   avgTime, fmt, precision); // we can still change dont care
+
+    glfwSetWindowTitle(_window, timeStr);
     glfwPollEvents();
 }

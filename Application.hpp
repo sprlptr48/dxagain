@@ -36,7 +36,9 @@ protected:
 
     int32_t _width = 0;
     int32_t _height = 0;
-    float _deltaTime = 0.016f;
+    uint8_t _totalFrames = 0; // last 100 frames
+    float _totalTime = 0;     // last 100 frames
+    float _deltaTime = 0; // last frametime in ms
 private:
     std::chrono::high_resolution_clock::time_point _currentTime;
     GLFWwindow* _window = nullptr;

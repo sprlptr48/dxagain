@@ -8,6 +8,16 @@
 #include "ShaderCollection.hpp"
 
 
+struct PerFrameConstantBuffer
+{
+    DirectX::XMFLOAT4X4 viewProjectionMatrix;
+};
+
+struct PerObjectConstantBuffer
+{
+    DirectX::XMFLOAT4X4 modelMatrix;
+};
+
 class mydx final : public Application
 {
 public:
@@ -24,6 +34,7 @@ protected:
     void Render() override;
 
 private:
+    void CreateConstantBuffers();
     bool CreateSwapchainResources();
     void DestroySwapchainResources();
 
@@ -41,5 +52,11 @@ private:
     WRL::ComPtr<ID3D11ShaderResourceView> _textureSrv = nullptr;
     WRL::ComPtr<ID3D11ShaderResourceView> _fallbackTextureSrv = nullptr;
 
+    WRL::ComPtr<ID3D11Buffer> _perFrameConstantBuffer = nullptr;
+    WRL::ComPtr<ID3D11Buffer> _perObjectConstantBuffer = nullptr;
+
     ShaderCollection _shaderCollection;
+
+    PerFrameConstantBuffer _perFrameConstantBufferData{};
+    PerObjectConstantBuffer _perObjectConstantBufferData{};
 };
